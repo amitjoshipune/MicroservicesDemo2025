@@ -13,8 +13,17 @@ public class ProductController : ControllerBase
     };
 
     [HttpGet("{id}")]
-    public IActionResult GetProduct(int id)
+    public async Task<IActionResult> GetProductAsync(int id)
     {
+        await Task.Delay(50);
+
+        // Simulate a transient failure
+        var currentTime = DateTime.Now.Second;
+        if (currentTime % 4 == 0) // Fail randomly 1/3 of the time
+        {
+            throw new HttpRequestException("Discount/GetDiscountAsync Simulated transient failure");
+        }
+
         var product = _products.FirstOrDefault(p => p.Id == id);
         return product != null ? Ok(product) : NotFound();
     }
